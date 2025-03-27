@@ -10,8 +10,30 @@ import cors from "cors"
 
 const app = express();
 app.use(express.json());
-app.use(cors())
-app.use(cors({ origin: "*" }));
+app.use(
+    cors({
+      origin: "http://localhost:5173", // Allow frontend
+      methods: "GET,POST,PUT,DELETE,OPTIONS",
+      allowedHeaders: "Content-Type, Authorization",
+      credentials: true, // Allow cookies and auth headers
+    })
+  );
+  
+  // Handle preflight requests manually
+  //@ts-ignore
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Credentials", "true");
+  
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(204);
+    }
+    
+    next();
+  });
+  
   // const saltRounds = 10; 
 
 app.post("/api/vi/signup", async (req, res) => {

@@ -11,21 +11,31 @@ export function Signup() {
     const navigate = useNavigate();
 
     async function signup() {
-       try{ 
-        const username = usernameRef.current?.value;
-        const password = passwordRef.current?.value
-        console.log(usernameRef.current?.value)
-        await axios.post(BACKEND_URL + "/api/vi/signup", {
-            username,
-            password
-        })
-        alert("You have signed up!")
-        navigate("/signin")
+        try { 
+            const username = usernameRef.current?.value?.trim();
+            const password = passwordRef.current?.value?.trim();
+    
+            if (!username || !password) {
+                alert("Please enter both username and password.");
+                return;
+            }
+    
+            console.log("Signing up:", username);
+    
+            await axios.post(`${BACKEND_URL}/api/vi/signup`, {
+                username,
+                password
+            });
+    
+            alert("You have signed up!");
+            navigate("/signin");
+        } 
+        catch (error) {
+            console.error("Signup error:", error);
+            alert("Signup failed. Please try again.");
+        }
     }
-    catch{
-        alert("You are not signed in")
-    }
-    }
+    
 
     return <div className="h-screen w-screen bg-yellow-200 flex justify-center items-center">
         <div className="rounded-xl flex flex-col bg-yellow-400 gap-4 border min-w-48 p-8">
