@@ -1,16 +1,50 @@
 import { CrosIcon } from "./ShareIcon";
 import { Button } from "./Button";
 import { Input } from "./Input";
+import { useRef } from "react";
+import { BACKEND_URL } from "../pages/config";
+import axios from "axios";
 
 
-export function CreateContent({open,onClose}:{
-    open:boolean,
-    onClose:()=> void
-}){
+export function CreateContent({ open, onClose }: {
+    open: boolean,
+    onClose: () => void
+}) {
+    async function addContent() {
+
+        enum ContentType{
+            Youtube='youtube',
+            Twitter='twitter'
+        }
+        try {
+            const title = titleRef.current?.value
+            const type = typeRef.current?.value
+            const link = linkRef.current?.value
+            if(!link || !title || !type){
+                alert("Enter all values")
+                return
+            }
+            if(type !== 'youtube'||'twitter'){
+                alert("Invalid type")
+                return
+            }
+            await axios.post(BACKEND_URL+"/api/vi/content")
+
+
+        } catch (e) {
+            console.log("failed to add content" + e);
+            alert("failed to add content");
+
+        }
+    }
+    const titleRef = useRef<HTMLInputElement>(null)
+    const typeRef = useRef<HTMLInputElement>(null)
+    const linkRef = useRef<HTMLInputElement>(null)
+
     return <div>
-        {open && <div> 
+        {open && <div>
             <div className="w-screen h-screen bg-black fixed top-0 left-0 opacity-70 flex justify-center">
-               
+
             </div>
             <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center">
                 <div className="flex flex-col justify-center">
@@ -21,23 +55,23 @@ export function CreateContent({open,onClose}:{
                             </div>
                         </div>
                         <div className="flex flex-col text-white">
-                            <div className="py-2"><Input type='text' placeholder={"Title"} /></div>
-                            <div className="py-2"><Input type='text' placeholder={"Link"} /></div>
+                            <div className="py-2"><Input ref={titleRef} type='text' placeholder={"Title"} /></div>
+                            <div className="py-2"><Input ref={typeRef} type='text' placeholder={"Link"} /></div>
                         </div>
                         <div>
                             <h1 className="font-semibold text-yellow-600">Type of url:</h1>
-                            <div className="py-2"><Input type='text' placeholder={"Youtube/Twitter link"} /></div>
+                            <div className="py-2"><Input type='text' ref={linkRef} placeholder={"Youtube/Twitter link"} /></div>
                             <div className="flex gap-1 justify-center pb-2">
-                               
+
                             </div>
                         </div>
                         <div className="flex justify-center">
-                            <Button variant="primary" text="Submit"/>
+                            <Button onClick={addContent} variant="primary" text="Submit" />
                         </div>
                     </span>
-                </div>     
+                </div>
             </div>
-            
+
         </div>}
     </div>
 }

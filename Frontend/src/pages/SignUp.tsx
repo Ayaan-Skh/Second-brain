@@ -22,7 +22,7 @@ export function Signup() {
     
             console.log("Signing up:", username);
     
-            await axios.post(`${BACKEND_URL}/api/vi/signup`, {
+            await axios.post(BACKEND_URL+'/api/vi/signup', {
                 username,
                 password
             });
