@@ -4,38 +4,52 @@ import { Input } from "./Input";
 import { useRef } from "react";
 import { BACKEND_URL } from "../pages/config";
 import axios from "axios";
-
+import { useContent } from "../hooks/useContent";
+import {toast} from "react-hot-toast"
 
 export function CreateContent({ open, onClose }: {
     open: boolean,
     onClose: () => void
 }) {
     async function addContent() {
-
-        enum ContentType{
-            Youtube='youtube',
-            Twitter='twitter'
-        }
+        
+        // enum ContentType{
+        //     Youtube='youtube',
+        //     Twitter='twitter'
+        // }
         try {
             const title = titleRef.current?.value
             const type = typeRef.current?.value
             const link = linkRef.current?.value
             if(!link || !title || !type){
-                alert("Enter all values")
+                toast.error("Enter all inputs",{
+                    position:"top-center"
+                })
                 return
             }
-            if(type !== 'youtube'||'twitter'){
-                alert("Invalid type")
-                return
+           
+            await axios.post(BACKEND_URL+"/api/vi/content",{
+                title,
+                link,
+                type
+            },{
+                headers:{
+                    "Authorization":localStorage.getItem('token')
+                }
             }
-            await axios.post(BACKEND_URL+"/api/vi/content")
-
-
-        } catch (e) {
-            console.log("failed to add content" + e);
-            alert("failed to add content");
-
-        }
+            //@ts-ignore
+        )
+        
+        
+        toast.success("Content added",{
+            position:"top-center"
+        })
+    } catch (e) {
+        console.log("failed to add content" + e);
+        toast.error("failed to add content")
+        
+    }
+        onClose()
     }
     const titleRef = useRef<HTMLInputElement>(null)
     const typeRef = useRef<HTMLInputElement>(null)
@@ -46,7 +60,7 @@ export function CreateContent({ open, onClose }: {
             <div className="w-screen h-screen bg-black fixed top-0 left-0 opacity-70 flex justify-center">
 
             </div>
-            <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center">
+            <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center rounded-2xl">
                 <div className="flex flex-col justify-center">
                     <span className="bg-yellow-600 w-80 opacity-100 p-4 rounded flex justify-center flex-col">
                         <div className="flex justify-end">
@@ -66,7 +80,10 @@ export function CreateContent({ open, onClose }: {
                             </div>
                         </div>
                         <div className="flex justify-center">
-                            <Button onClick={addContent} variant="primary" text="Submit" />
+                            <Button onClick={addContent}
+                             variant="primary" 
+                             text="Submit"
+                              />
                         </div>
                     </span>
                 </div>
